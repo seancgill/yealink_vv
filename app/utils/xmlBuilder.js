@@ -64,6 +64,7 @@ exports.createOptionsMenuXML = (voicemail, folder, user_id, domain) => {
 };
 
 // Function to create Yealink-compatible XML for voicemail details with play and delete options
+// Function to create Yealink-compatible XML for voicemail details with play, stop, and delete options
 exports.createVoicemailDetailXML = (voicemail) => {
     const builder = new Builder({ headless: false });
 
@@ -93,17 +94,21 @@ exports.createVoicemailDetailXML = (voicemail) => {
                     }
                 ]
             },
-            // Remove LineFooter as it's not the right location for softkeys
             SoftKey: [
                 {
                     $: { index: "1" },
                     Label: "Play",
-                    URI: voicemail['file-access-url '].trim()
+                    URI: `http://192.168.1.157:5000/yealink_vv/execute_play?url=${voicemail['file-access-url '].trim()}`
                 },
                 {
                     $: { index: "2" },
+                    Label: "Stop",
+                    URI: "http://192.168.1.157:5000/yealink_vv/execute_stop" // Adjust the route to handle stop functionality
+                },
+                {
+                    $: { index: "3" },
                     Label: "Delete",
-                    URI: `http://localhost:5000/yealink_vv/delete_voicemail?user_id=${voicemail['voicemail-from-user']}&domain=${voicemail['voicemail-from-host']}&file=${voicemail.filename}`
+                    URI: `http://192.168.1.157:5000/yealink_vv/delete_voicemail?user_id=${voicemail['voicemail-from-user']}&domain=${voicemail['voicemail-from-host']}&file=${voicemail.filename}`
                 }
             ]
         }
@@ -111,6 +116,45 @@ exports.createVoicemailDetailXML = (voicemail) => {
 
     return builder.buildObject(xmlObject);
 };
+
+
+// Function to create the XML for executing the play command
+exports.createExecutePlayXML = (url) => {
+    const builder = new Builder({ headless: false });
+
+    const xmlObject = {
+        YealinkIPPhoneExecute: {
+            $: { Beep: "no" },
+            ExecuteItem: [
+                { URI: `Wav.Play:${url}` }
+            ]
+        }
+    };
+
+    return builder.buildObject(xmlObject);
+};
+
+
+// Function to create the XML for executing the stop command
+exports.createExecuteStopXML = () => {
+    const builder = new Builder({ headless: false });
+
+    const xmlObject = {
+        YealinkIPPhoneExecute: {
+            $: { Beep: "no" },
+            ExecuteItem: [
+                { URI: "Wav.Stop" }
+            ]
+        }
+    };
+
+    return builder.buildObject(xmlObject);
+};
+
+
+
+
+
 
 
 // Delete Confirmation Screen

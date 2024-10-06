@@ -125,6 +125,36 @@ router.get('/yealink_vv/voicemail_detail', async (req, res) => {
     }
 });
 
+
+// Route to handle the play command
+router.get('/yealink_vv/execute_play', (req, res) => {
+    logToAppLog('/yealink_vv/execute_play Received query parameters: ' + JSON.stringify(req.query));
+    const { url } = req.query;
+
+    const executeXML = xmlBuilder.createExecutePlayXML(url);
+
+    res.set('Content-Type', 'application/xml; charset=utf-8');
+    res.send(executeXML);
+});
+
+
+// Route to handle the stop command
+router.get('/yealink_vv/execute_stop', (req, res) => {
+    logToAppLog('/yealink_vv/execute_stop called');
+
+    const executeStopXML = xmlBuilder.createExecuteStopXML();
+
+    res.set('Content-Type', 'application/xml; charset=utf-8');
+    res.send(executeStopXML);
+});
+
+
+
+
+
+
+
+
 module.exports = router;
 
 

@@ -1,5 +1,6 @@
 node_modules/
 logs/
 app_info/
+data/
 *.log
 .env
