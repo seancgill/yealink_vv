@@ -24,3 +24,27 @@ exports.fetchVoicemails = async (user_id, domain, folder = 'new') => {
         return [];
     }
 };
+
+// Function to fetch a specific voicemail's details
+exports.fetchVoicemailDetail = async (user_id, domain, file) => {
+    const url = `https://sgdemo-core-031-mci.sgdemo.ucaas.run/ns-api/v2/domains/${domain}/users/${user_id}/voicemails/new/${file}`;
+
+    // Define headers, including the Bearer token
+    const headers = {
+        'accept': 'application/json',
+        'authorization': `Bearer ${config.apiToken}`, // Make sure your token is stored in config
+    };
+
+    try {
+        // Send the GET request to the Netsapiens API
+        const response = await axios.get(url, { headers });
+
+        // Log and return the voicemail detail data
+        console.log('Netsapiens API voicemail detail response:', response.data);
+        return response.data;
+    } catch (error) {
+        // Log and return null if there's an error
+        console.error('Error fetching voicemail detail from Netsapiens API:', error);
+        return null;
+    }
+};

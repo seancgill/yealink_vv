@@ -2,6 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
+const session = require('express-session');
+const crypto = require('crypto');
 
 const app = express();
 
@@ -10,6 +12,17 @@ const logStream = fs.createWriteStream(path.join(__dirname, 'logs', 'app.log'), 
 
 // Setup the logger to write to app.log
 app.use(morgan('combined', { stream: logStream }));
+
+// Generate a secret key for session
+const secretKey = crypto.randomBytes(64).toString('hex');
+
+// Initialize session middleware
+app.use(session({
+  secret: secretKey,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // Change to true when using HTTPS
+}));
 
 // Import the voicemail route and mount it
 const voicemailRoute = require('./app/routes/voicemail');  // Adjust the path if necessary
