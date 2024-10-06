@@ -74,6 +74,21 @@ router.get('/yealink_vv', async (req, res) => {
 });
 
 router.get('/yealink_vv/voicemail_detail', async (req, res) => {
+        // Store user_id and domain in session if they are present
+        if (req.query.user_id) {
+            req.session.user_id = req.query.user_id;
+        }
+        if (req.query.domain) {
+            req.session.domain = req.query.domain;
+        }
+
+        // Log the session data to ensure it's being correctly populated
+        logToAppLog('Session data: ' + JSON.stringify(req.session))
+    
+        // Retrieve user_id and domain from session if they are not provided in the query
+        const user_id = req.query.user_id || req.session.user_id;
+        const domain = req.query.domain || req.session.domain;
+        //const { voicemail } = req.query;
     try {
         logToAppLog('Received request for voicemail detail with query parameters: ' + JSON.stringify(req.query));
         const { user_id, domain, file } = req.query;

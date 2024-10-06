@@ -65,7 +65,6 @@ exports.createOptionsMenuXML = (voicemail, folder, user_id, domain) => {
 
 // Function to create Yealink-compatible XML for voicemail details with play and delete options
 exports.createVoicemailDetailXML = (voicemail) => {
-    console.log(voicemail + 'createVoicemailDetailxml')
     const builder = new Builder({ headless: false });
 
     const xmlObject = {
@@ -94,19 +93,16 @@ exports.createVoicemailDetailXML = (voicemail) => {
                     }
                 ]
             },
-            LineFooter: [
+            // Remove LineFooter as it's not the right location for softkeys
+            SoftKey: [
                 {
-                    _: "Play | Delete",
-                    $: { Size: "normal", Align: "center", Color: "black" }
-                }
-            ],
-            SoftkeyItem: [
-                {
-                    Name: "Play",
+                    $: { index: "1" },
+                    Label: "Play",
                     URI: voicemail['file-access-url '].trim()
                 },
                 {
-                    Name: "Delete",
+                    $: { index: "2" },
+                    Label: "Delete",
                     URI: `http://localhost:5000/yealink_vv/delete_voicemail?user_id=${voicemail['voicemail-from-user']}&domain=${voicemail['voicemail-from-host']}&file=${voicemail.filename}`
                 }
             ]
@@ -115,7 +111,6 @@ exports.createVoicemailDetailXML = (voicemail) => {
 
     return builder.buildObject(xmlObject);
 };
-
 
 
 // Delete Confirmation Screen
